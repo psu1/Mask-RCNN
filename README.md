@@ -59,10 +59,8 @@ create a symlink.
 To test your installation simply run the demo with
 
     python demo.py
+    python demo_video.py --video_file_path
 
-It works on CPU or GPU and the result should look like this:
-
-![](assets/park.png)
 
 ## Training on COCO
 Training and evaluation code is in coco.py. You can run it from the command
