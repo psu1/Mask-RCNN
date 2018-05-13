@@ -6,3 +6,4 @@ pre_train_models/
 *.pyc
 *.o
 *_ext*
+.idea/
