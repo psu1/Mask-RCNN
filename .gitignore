@@ -1,0 +1,8 @@
+logs/
+pre_train_models/
+*.ipynb_checkpoints
+*.pth
+*.so
+*.pyc
+*.o
+*_ext*
