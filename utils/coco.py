@@ -1,3 +1,7 @@
+'''
+Prepare COCO Dataset
+
+'''
 import os
 import shutil
 import time
@@ -13,9 +17,6 @@ from lib.pycocotools import mask as maskUtils
 
 DEFAULT_DATASET_YEAR = "2014"
 
-############################################################
-#  Dataset
-############################################################
 
 class CocoDataset(utils.Dataset):
     def load_coco(self, dataset_dir, subset, year=DEFAULT_DATASET_YEAR, class_ids=None,

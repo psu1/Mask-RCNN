@@ -1,3 +1,6 @@
+'''
+Data Generator
+'''
 import random
 
 import numpy as np
@@ -7,9 +10,7 @@ import torch.utils.data
 import utils.utils as utils
 
 from utils.dataFormat import compose_image_meta, parse_image_meta, mold_image
-############################################################
-#  Data Generator
-############################################################
+
 
 def load_image_gt(dataset, config, image_id, augment=False,
                   use_mini_mask=False):

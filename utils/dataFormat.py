@@ -1,8 +1,8 @@
+'''
+Data Formatting
+'''
 import numpy as np
 
-############################################################
-#  Data Formatting
-############################################################
 
 def compose_image_meta(image_id, image_shape, window, active_class_ids):
     """Takes attributes of an image and puts them in one 1D array. Use

@@ -1,3 +1,6 @@
+'''
+Save logs to txt file.
+'''
 import os
 
 def remove(file_name):

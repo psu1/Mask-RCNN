@@ -1,10 +1,5 @@
 """
 Mask R-CNN
-The main Mask R-CNN model implemenetation.
-
-Copyright (c) 2017 Matterport, Inc.
-Licensed under the MIT License (see LICENSE for details)
-Written by Waleed Abdulla
 """
 
 import datetime
@@ -34,8 +29,6 @@ from layers.fpn_heads import Classifier, Mask
 from layers.detection import detection_target_layer, detection_layer
 
 
-
-#  MaskRCNN
 
 class MaskRCNN(nn.Module):
     """Encapsulates the Mask RCNN model functionality.

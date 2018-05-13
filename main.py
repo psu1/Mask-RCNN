@@ -26,10 +26,9 @@ DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
 # also modify DEFAULT_DATASET_YEAR in utils.coco.py, if you change it
 DEFAULT_DATASET_YEAR = "2014"
 
-############################################################
-#  Configurations
-############################################################
 
+
+#  Configurations
 class CocoConfig(Config):
     """Configuration for training on MS COCO.
     Derives from the base Config class and overrides values specific
@@ -50,11 +49,8 @@ class CocoConfig(Config):
 
 
 
-############################################################
+
 #  Training
-############################################################
-
-
 if __name__ == '__main__':
     import argparse
 
