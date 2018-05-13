@@ -1,30 +1,5 @@
 """
-Mask R-CNN
-Configurations and data loading code for MS COCO.
-
-Copyright (c) 2017 Matterport, Inc.
-Licensed under the MIT License (see LICENSE for details)
-Written by Waleed Abdulla
-
-------------------------------------------------------------
-
-Usage: import the module (see Jupyter notebooks for examples), or run from
-       the command line as such:
-
-    # Train a new model starting from pre-trained COCO weights
-    python3 coco.py train --dataset=/path/to/coco/ --model=coco
-
-    # Train a new model starting from ImageNet weights
-    python3 coco.py train --dataset=/path/to/coco/ --model=imagenet
-
-    # Continue training a model that you had trained earlier
-    python3 coco.py train --dataset=/path/to/coco/ --model=/path/to/weights.h5
-
-    # Continue training the last model you trained
-    python3 coco.py train --dataset=/path/to/coco/ --model=last
-
-    # Run COCO evaluatoin on the last model you trained
-    python3 coco.py evaluate --dataset=/path/to/coco/ --model=last
+Mask R-CNN Training Code
 """
 
 import os
@@ -33,12 +8,6 @@ from cfgs.config import Config
 from utils.coco import CocoDataset, evaluate_coco
 from tools.fprintfLog import fprintf_log
 import datetime
-# Download and install the Python COCO tools from https://github.com/waleedka/coco
-# That's a fork from the original https://github.com/pdollar/coco with a bug
-# fix for Python 3.
-# I submitted a pull request https://github.com/cocodataset/cocoapi/pull/50
-# If the PR is merged then use the original repo.
-# Note: Edit PythonAPI/Makefile and replace "python" with "python3".
 
 
 # Root directory of the project
