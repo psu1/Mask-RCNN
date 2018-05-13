@@ -8,3 +8,4 @@ pre_train_models/
 *_ext*
 .idea/
 pycocotools
+python_operations.ipynb
