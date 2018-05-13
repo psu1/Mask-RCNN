@@ -17,11 +17,4 @@
     </entry>
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6.5 (~/jay/anaconda2/envs/python3/bin/python)" project-jdk-type="Python SDK" />
-  <component name="PyConsoleOptionsProvider">
-    <option name="myPythonConsoleState">
-      <console-settings sdk-home="/home/jay/miniconda2/bin/python2.7">
-        <option name="mySdkHome" value="/home/jay/miniconda2/bin/python2.7" />
-      </console-settings>
-    </option>
-  </component>
 </project>
