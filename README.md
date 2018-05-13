@@ -16,7 +16,7 @@ and [multimodallearning's](https://github.com/multimodallearning/pytorch-mask-rc
 
 ## Requirements
 * Python 3
-* Pytorch 0.3
+* Pytorch 0.4
 * matplotlib, scipy, skimage, h5py
 
 ## Installation
