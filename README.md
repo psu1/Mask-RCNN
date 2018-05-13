@@ -1,9 +1,10 @@
 # Mask-RCNN by Pytorch
 
 
-The Mask R-CNN model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based
-on Feature Pyramid Network (FPN) and a ResNet101 backbone.
+This is a Pytorch implementation of Mask R-CNN that based on [Matterport's](https://github.com/matterport/Mask_RCNN)
+and [multimodallearning's](https://github.com/multimodallearning/pytorch-mask-rcnn) repository.
 
+## Demo
 ![Instance Segmentation Sample](assets/Figure_1.png)
 
 
@@ -63,7 +64,7 @@ To test your installation simply run the demo with
 
 
 ## Training on COCO
-Training and evaluation code is in coco.py. You can run it from the command
+Training and evaluation code is in main.py. You can run it from the command
 line as such:
 
     # Train a new model starting from pre-trained COCO weights
@@ -90,7 +91,7 @@ You can also run the COCO evaluation code with:
     # Run COCO evaluation on the last trained model
     python main.py evaluate --dataset=/path/to/coco/ --model=last
 
-The training schedule, learning rate, and other parameters can be set in coco.py.
+The training schedule, learning rate, and other parameters can be set in main.py.
 
 ## Results
 
