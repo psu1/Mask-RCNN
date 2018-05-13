@@ -8,7 +8,9 @@ on Feature Pyramid Network (FPN) and a ResNet101 backbone.
 
 The next four images visualize different stages in the detection pipeline:
 
-
+## TODO
+- [x] Single GPU training
+- [ ] Multi-GPU support
 
 ## Requirements
 * Python 3
@@ -18,7 +20,7 @@ The next four images visualize different stages in the detection pipeline:
 ## Installation
 1. Clone this repository.
 
-        git clone https://github.com/multimodallearning/pytorch-mask-rcnn.git
+        git clone git@github.com:psu1/Mask-RCNN.git
 
     
 2. We use functions from two more repositories that need to be build with the right `--arch` option for cuda support.
