@@ -28,6 +28,7 @@ and [multimodallearning's](https://github.com/multimodallearning/pytorch-mask-rc
 2. Build [NMS(Non-Maximum Suppression)](https://github.com/ruotianluo/pytorch-faster-rcnn)
 and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corresponding `--arch` option for cuda support.
 
+
     | GPU | arch |
     | --- | --- |
     | TitanX | sm_52 |
@@ -35,6 +36,7 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
     | GTX 1070 | sm_61 |
     | GTX 1080 (Ti) | sm_61 |
 
+        # first choose right --arch in make.sh
         cd Mask-RCNN/lib
         bash make.sh
         cd ../
