@@ -53,13 +53,13 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
         make
         cd ../../..
 
-Create a symlink in `/lib/pycocotools`.
+    Create a symlink in `/lib/pycocotools`.
 
         ln -s /path/to/coco/cocoapi/PythonAPI/pycocotools/  /lib/pycocotools
     
 4. Download the pretrained models on COCO and ImageNet from [Google Drive](https://drive.google.com/open?id=1LXUgC2IZUYNEoXr05tdqyKFZY0pZyPDc).
 
-Chnage the corresponding model path (COCO_MODEL_PATH) in `main.py` and `demo.py`.
+    Chnage the corresponding model path (COCO_MODEL_PATH) in `main.py` and `demo.py`.
 
 ## Demo
 
@@ -69,9 +69,13 @@ To test your installation simply run the demo with
     python demo_video.py --video_file_path
 
 
-## Training on COCO
-Training and evaluation code is in main.py. You can run it from the command
-line as such:
+## Training
+
+The training schedule can be modified in `main.py`.
+
+The LEARNING_RATE, GPU_COUNT and other parameters can be set in `CocoConfig` of `main.py`.
+
+For example, training on COCO dataset:
 
     # Train a new model starting from pre-trained COCO weights
     python main.py train --dataset=/path/to/coco/ --model=coco
@@ -97,7 +101,6 @@ You can also run the COCO evaluation code with:
     # Run COCO evaluation on the last trained model
     python main.py evaluate --dataset=/path/to/coco/ --model=last
 
-The training schedule, learning rate, and other parameters can be set in main.py.
 
 ## Results
 
