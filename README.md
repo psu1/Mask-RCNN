@@ -46,6 +46,7 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
    It will automatically download the COCO dataset in `/path/to/coco/` for you.
 
 4. Install the [Python COCO API](https://github.com/cocodataset/cocoapi) and create a symlink.
+
         cd data
         git clone https://github.com/pdollar/coco.git
         cd coco/PythonAPI
