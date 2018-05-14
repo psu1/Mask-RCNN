@@ -73,9 +73,7 @@ To test your installation simply run the demo with
 
 ## Training
 
-The training schedule can be modified in `main.py`.
-
-The LEARNING_RATE, GPU_COUNT and other parameters can be set in `CocoConfig` of `main.py`.
+The TRAIN_SCHEDULE, LEARNING_RATE and other parameters can be set in `CocoConfig` of `/models/train_val.py`.
 
 For example, training on COCO dataset:
 
