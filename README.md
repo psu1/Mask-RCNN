@@ -25,9 +25,8 @@ and [multimodallearning's](https://github.com/multimodallearning/pytorch-mask-rc
         git clone git@github.com:psu1/Mask-RCNN.git
 
     
-2. We use functions from two more repositories that need to be build with the right `--arch` option for cuda support.
-The two functions are Non-Maximum Suppression from ruotianluo's [pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn)
-repository and longcw's [RoiAlign](https://github.com/longcw/RoIAlign.pytorch).
+2. Build [NMS(Non-Maximum Suppression)](https://github.com/ruotianluo/pytorch-faster-rcnn)
+and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) with the corresponding `--arch` option for cuda support.
 
     | GPU | arch |
     | --- | --- |
@@ -36,24 +35,30 @@ repository and longcw's [RoiAlign](https://github.com/longcw/RoIAlign.pytorch).
     | GTX 1070 | sm_61 |
     | GTX 1080 (Ti) | sm_61 |
 
-        cd nms/src/cuda/
+        cd /libs/nms/src/cuda/
         nvcc -c -o nms_kernel.cu.o nms_kernel.cu -x cu -Xcompiler -fPIC -arch=[arch]
         cd ../../
         python build.py
         cd ../
 
-        cd roialign/roi_align/src/cuda/
+        cd /libs/roialign/roi_align/src/cuda/
         nvcc -c -o crop_and_resize_kernel.cu.o crop_and_resize_kernel.cu -x cu -Xcompiler -fPIC -arch=[arch]
         cd ../../
         python build.py
         cd ../../
 
-3. As we use the [COCO dataset](http://cocodataset.org/#home) install the [Python COCO API](https://github.com/cocodataset/cocoapi) and
-create a symlink.
+3. Download [COCO dataset](http://cocodataset.org/#home). Or you just run
+
+        python main.py train --dataset=/path/to/coco/ --model=coco --download=true
+
+   It will automatically download the COCO dataset in /path/to/coco/ for you.
+
+4. Install the [Python COCO API](https://github.com/cocodataset/cocoapi) and create a symlink.
 
         ln -s /path/to/coco/cocoapi/PythonAPI/pycocotools/  /lib/pycocotools
     
 4. Download the pretrained models on COCO and ImageNet from [Google Drive](https://drive.google.com/open?id=1LXUgC2IZUYNEoXr05tdqyKFZY0pZyPDc).
+Chnage the corresponding model path (COCO_MODEL_PATH) in main.py and demo.py.
 
 ## Demo
 
