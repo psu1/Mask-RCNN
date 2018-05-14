@@ -3,7 +3,7 @@ import random
 import skimage.io
 import matplotlib.pyplot as plt
 
-import main
+from models.train_val import CocoConfig
 from models.mask_rcnn import  MaskRCNN
 import tools.visualize as visualize
 
@@ -24,7 +24,7 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
 # Directory of images to run detection on
 IMAGE_DIR = os.path.join(ROOT_DIR, "data/images")
 
-class InferenceConfig(main.CocoConfig):
+class InferenceConfig(CocoConfig):
     # Set batch size to 1 since we'll be running inference on
     # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
     # GPU_COUNT = 0 for CPU
