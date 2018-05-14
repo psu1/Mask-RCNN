@@ -1,12 +1,15 @@
+'''
+Base Configuration Class
+Don't use this class directly. Instead, sub-class it and override the configurations you need to change.
+
+'''
 import math
 import numpy as np
 import os
 
 from tools.fprintfLog import fprintf_log
 
-# Base Configuration Class
-# Don't use this class directly. Instead, sub-class it and override
-# the configurations you need to change.
+
 
 class Config(object):
     """
