@@ -9,7 +9,7 @@ import tools.visualize as visualize
 
 import torch
 
-
+from models.train_val import detect
 # Root directory of the project
 ROOT_DIR = os.getcwd()
 
@@ -67,7 +67,7 @@ image = skimage.io.imread(os.path.join(IMAGE_DIR, random.choice(file_names)))
 # image = skimage.io.imread(os.path.join(IMAGE_DIR, 'img5.jpg'))
 
 # Run detection
-results = model.detect([image])
+results = detect(model, [image])
 
 # Visualize results
 r = results[0]

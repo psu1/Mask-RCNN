@@ -1,11 +1,6 @@
-"""
-Mask R-CNN
-Common utility functions and classes.
-
-Copyright (c) 2017 Matterport, Inc.
-Licensed under the MIT License (see LICENSE for details)
-Written by Waleed Abdulla
-"""
+'''
+Bounding Boxes
+'''
 
 import numpy as np
 import scipy.misc
@@ -15,9 +10,7 @@ import skimage.io
 
 import torch
 
-############################################################
-#  Bounding Boxes
-############################################################
+# Bounding Boxes
 
 def extract_bboxes(mask):
     """Compute bounding boxes from masks.
@@ -108,9 +101,8 @@ def box_refinement(box, gt_box):
     return result
 
 
-############################################################
+
 #  Dataset
-############################################################
 
 class Dataset(object):
     """The base class for dataset classes.
@@ -390,9 +382,8 @@ def unmold_mask(mask, bbox, image_shape):
     return full_mask
 
 
-############################################################
+
 #  Anchors
-############################################################
 
 def generate_anchors(scales, ratios, shape, feature_stride, anchor_stride):
     """
