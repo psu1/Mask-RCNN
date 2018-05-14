@@ -5,7 +5,7 @@ This is a Pytorch implementation of Mask R-CNN that based on [Matterport's](http
 and [multimodallearning's](https://github.com/multimodallearning/pytorch-mask-rcnn) repository.
 
 ## Demo
-![Instance Segmentation Sample](assets/Figure_1.png)
+![Instance Segmentation Sample](data/assets/Figure_1.png)
 
 
 ## TODO
@@ -26,7 +26,7 @@ and [multimodallearning's](https://github.com/multimodallearning/pytorch-mask-rc
 
     
 2. Build [NMS(Non-Maximum Suppression)](https://github.com/ruotianluo/pytorch-faster-rcnn)
-and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) with the corresponding `--arch` option for cuda support.
+and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corresponding `--arch` option for cuda support.
 
     | GPU | arch |
     | --- | --- |
@@ -35,17 +35,9 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) with the correspondin
     | GTX 1070 | sm_61 |
     | GTX 1080 (Ti) | sm_61 |
 
-        cd /libs/nms/src/cuda/
-        nvcc -c -o nms_kernel.cu.o nms_kernel.cu -x cu -Xcompiler -fPIC -arch=[arch]
-        cd ../../
-        python build.py
+        cd pytorch-faster-rcnn/lib
+        bash make.sh
         cd ../
-
-        cd /libs/roialign/roi_align/src/cuda/
-        nvcc -c -o crop_and_resize_kernel.cu.o crop_and_resize_kernel.cu -x cu -Xcompiler -fPIC -arch=[arch]
-        cd ../../
-        python build.py
-        cd ../../
 
 3. Download [COCO dataset](http://cocodataset.org/#home). Or you just run
 
@@ -54,7 +46,13 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) with the correspondin
    It will automatically download the COCO dataset in ``/path/to/coco/` for you.
 
 4. Install the [Python COCO API](https://github.com/cocodataset/cocoapi) and create a symlink.
+        cd data
+        git clone https://github.com/pdollar/coco.git
+        cd coco/PythonAPI
+        make
+        cd ../../..
 
+Create a symlink in `/lib/pycocotools`
         ln -s /path/to/coco/cocoapi/PythonAPI/pycocotools/  /lib/pycocotools
     
 4. Download the pretrained models on COCO and ImageNet from [Google Drive](https://drive.google.com/open?id=1LXUgC2IZUYNEoXr05tdqyKFZY0pZyPDc).

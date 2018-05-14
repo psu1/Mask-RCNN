@@ -22,7 +22,7 @@ MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
 
 # Directory of images to run detection on
-IMAGE_DIR = os.path.join(ROOT_DIR, "images")
+IMAGE_DIR = os.path.join(ROOT_DIR, "data/images")
 
 class InferenceConfig(main.CocoConfig):
     # Set batch size to 1 since we'll be running inference on
