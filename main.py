@@ -1,6 +1,7 @@
 """
 Mask R-CNN Training Code
 """
+import argparse
 
 from models.mask_rcnn import  MaskRCNN
 from models.train_val import *
@@ -9,7 +10,53 @@ from utils.coco import CocoDataset, evaluate_coco
 from tools.fprintfLog import fprintf_log
 import datetime
 
-def main(args):
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Train Mask R-CNN on MS COCO.')
+    parser.add_argument("command",
+                        metavar="<command>",
+                        help="'train' or 'evaluate' on MS COCO")
+    parser.add_argument('--dataset', required=False,
+                        default="/path/to/coco/",
+                        metavar="/path/to/coco/",
+                        help='Directory of the MS-COCO dataset')
+    parser.add_argument('--year', required=False,
+                        default=DEFAULT_DATASET_YEAR,
+                        metavar="<year>",
+                        help='Year of the MS-COCO dataset (2014 or 2017) (default=2014)')
+    parser.add_argument('--model', required=False,
+                        default='imagenet',
+                        metavar="/path/to/weights.pth",
+                        help="Path to weights .pth file or 'coco'")
+    parser.add_argument('--logs', required=False,
+                        default=DEFAULT_LOGS_DIR,
+                        metavar="/path/to/logs/",
+                        help='Logs and checkpoints directory (default=logs/)')
+    parser.add_argument('--limit', required=False,
+                        default=500,
+                        metavar="<image count>",
+                        help='Images to use for evaluation (default=500)')
+    parser.add_argument('--download', required=False,
+                        default=False,
+                        metavar="<True|False>",
+                        help='Automatically download and unzip MS-COCO files (default=False)',
+                        type=bool)
+
+    # DEBUG USE ONLY
+    # args.command = "evaluate"
+    # args.model = 'last'
+
+    return parser.parse_args()
+
+def main():
+    args = parse_args()
+    print("Model: ", args.model)
+    print("Dataset: ", args.dataset)
+    print("Year: ", args.year)
+    print("Logs: ", args.logs)
+    print("Auto Download: ", args.download)
+    print("Command: ", args.command)
     # Configurations
     if args.command == "train":
         config = CocoConfig()
@@ -117,51 +164,5 @@ def main(args):
 
 
 if __name__ == '__main__':
-    import argparse
-
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(
-        description='Train Mask R-CNN on MS COCO.')
-    parser.add_argument("command",
-                        metavar="<command>",
-                        help="'train' or 'evaluate' on MS COCO")
-    parser.add_argument('--dataset', required=False,
-                        default="/path/to/coco/",
-                        metavar="/path/to/coco/",
-                        help='Directory of the MS-COCO dataset')
-    parser.add_argument('--year', required=False,
-                        default=DEFAULT_DATASET_YEAR,
-                        metavar="<year>",
-                        help='Year of the MS-COCO dataset (2014 or 2017) (default=2014)')
-    parser.add_argument('--model', required=False,
-                        default='imagenet',
-                        metavar="/path/to/weights.pth",
-                        help="Path to weights .pth file or 'coco'")
-    parser.add_argument('--logs', required=False,
-                        default=DEFAULT_LOGS_DIR,
-                        metavar="/path/to/logs/",
-                        help='Logs and checkpoints directory (default=logs/)')
-    parser.add_argument('--limit', required=False,
-                        default=500,
-                        metavar="<image count>",
-                        help='Images to use for evaluation (default=500)')
-    parser.add_argument('--download', required=False,
-                        default=False,
-                        metavar="<True|False>",
-                        help='Automatically download and unzip MS-COCO files (default=False)',
-                        type=bool)
-    args = parser.parse_args()
-
-    # DEBUG USE ONLY
-    # args.command = "evaluate"
-    # args.model = 'last'
-
-    print("Model: ", args.model)
-    print("Dataset: ", args.dataset)
-    print("Year: ", args.year)
-    print("Logs: ", args.logs)
-    print("Auto Download: ", args.download)
-    print("Command: ", args.command)
-
-    main(args)
+    main()
 

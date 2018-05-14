@@ -55,6 +55,9 @@ class CocoConfig(Config):
     # Number of classes (including background)
     NUM_CLASSES = 1 + 80  # COCO has 80 classes
 
+    #TRAIN_SCHEDULE for test
+    TRAIN_SCHEDULE = [1, 1, 1]
+
 
 def find_last(model):
     """Finds the last checkpoint file of the last trained model in the
