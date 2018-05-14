@@ -35,7 +35,7 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
     | GTX 1070 | sm_61 |
     | GTX 1080 (Ti) | sm_61 |
 
-        cd pytorch-faster-rcnn/lib
+        cd Mask-RCNN/lib
         bash make.sh
         cd ../
 
@@ -43,7 +43,7 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
 
         python main.py train --dataset=/path/to/coco/ --model=coco --download=true
 
-   It will automatically download the COCO dataset in ``/path/to/coco/` for you.
+   It will automatically download the COCO dataset in `/path/to/coco/` for you.
 
 4. Install the [Python COCO API](https://github.com/cocodataset/cocoapi) and create a symlink.
         cd data
@@ -52,10 +52,12 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
         make
         cd ../../..
 
-Create a symlink in `/lib/pycocotools`
+Create a symlink in `/lib/pycocotools`.
+
         ln -s /path/to/coco/cocoapi/PythonAPI/pycocotools/  /lib/pycocotools
     
 4. Download the pretrained models on COCO and ImageNet from [Google Drive](https://drive.google.com/open?id=1LXUgC2IZUYNEoXr05tdqyKFZY0pZyPDc).
+
 Chnage the corresponding model path (COCO_MODEL_PATH) in `main.py` and `demo.py`.
 
 ## Demo
