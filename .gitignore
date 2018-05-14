@@ -9,3 +9,4 @@ pre_train_models/
 .idea/
 pycocotools
 python_operations.ipynb
+PATH.sh

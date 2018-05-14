@@ -110,9 +110,9 @@ COCO results for bounding box and segmentation are reported based on training
 with the default configuration and backbone initialized with pretrained
 ImageNet weights. Used metric is AP on IoU=0.50:0.95.
 
-|    | from scratch | converted from keras | Matterport's Mask_RCNN | Mask R-CNN paper |
+|    | from scratch | Mask R-CNN(Multi-GPU) | Mask R-CNN | Mask R-CNN paper |
 | --- | --- | --- | --- | --- |
-| bbox | TODO | 0.347 | 0.347 | 0.382 |
-| segm | TODO | 0.296 | 0.296 | 0.354 |
+| bbox | TODO | TODO | 0.347 | 0.382 |
+| segm | TODO | TODO | 0.296 | 0.354 |
 
 

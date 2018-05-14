@@ -58,11 +58,11 @@ if __name__ == '__main__':
     # Parse command line arguments
     parser = argparse.ArgumentParser(
         description='Train Mask R-CNN on MS COCO.')
-    # parser.add_argument("command",
-    #                     metavar="<command>",
-    #                     help="'train' or 'evaluate' on MS COCO")
+    parser.add_argument("command",
+                        metavar="<command>",
+                        help="'train' or 'evaluate' on MS COCO")
     parser.add_argument('--dataset', required=False,
-                        default="/media/jaden/DeepLearningCode/data/coco",
+                        default="/path/to/coco/",
                         metavar="/path/to/coco/",
                         help='Directory of the MS-COCO dataset')
     parser.add_argument('--year', required=False,
@@ -87,14 +87,17 @@ if __name__ == '__main__':
                         help='Automatically download and unzip MS-COCO files (default=False)',
                         type=bool)
     args = parser.parse_args()
-    # print("Command: ", args.command)
-    args.command = "train"
+
+    # DEBUG USE ONLY
+    # args.command = "evaluate"
+    # args.model = 'last'
 
     print("Model: ", args.model)
     print("Dataset: ", args.dataset)
     print("Year: ", args.year)
     print("Logs: ", args.logs)
     print("Auto Download: ", args.download)
+    print("Command: ", args.command)
 
     # Configurations
     if args.command == "train":
@@ -107,15 +110,10 @@ if __name__ == '__main__':
             IMAGES_PER_GPU = 1
             DETECTION_MIN_CONFIDENCE = 0
         config = InferenceConfig()
-    # config.display()
+
 
     # Create model
-    if args.command == "train":
-        model = MaskRCNN(config=config,
-                                  model_dir=args.logs)
-    else:
-        model = MaskRCNN(config=config,
-                                  model_dir=args.logs)
+    model = MaskRCNN(config=config, model_dir=args.logs)
     if config.GPU_COUNT:
         model = model.cuda()
 
@@ -125,7 +123,8 @@ if __name__ == '__main__':
             model_path = COCO_MODEL_PATH
         elif args.model.lower() == "last":
             # Find last trained weights
-            model_path = model.find_last()[1]
+            model_path = find_last(model)[1]
+            print('Evaluate on {}' .format(model_path))
         elif args.model.lower() == "imagenet":
             # Start from ImageNet trained weights
             model_path = config.IMAGENET_MODEL_PATH
@@ -144,8 +143,10 @@ if __name__ == '__main__':
         config.NAME.lower(), now))
 
     # fprintf final config and model details to txt
-    config.display(save_log_dir)
-    fprintf_log(model, save_log_dir, quiet_termi=True)
+    if args.command == "train":
+        config.display(save_log_dir)
+        fprintf_log(model, save_log_dir, quiet_termi=True)
+
 
     # Train or evaluate
     if args.command == "train":

@@ -14,6 +14,7 @@ from lib.pycocotools.coco import COCO
 from lib.pycocotools.cocoeval import COCOeval
 from lib.pycocotools import mask as maskUtils
 
+from models.train_val import detect
 
 DEFAULT_DATASET_YEAR = "2014"
 
@@ -292,7 +293,7 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
 
         # Run detection
         t = time.time()
-        r = model.detect([image])[0]
+        r = detect(model, [image])[0]
         t_prediction += (time.time() - t)
 
         # Convert results to COCO format
