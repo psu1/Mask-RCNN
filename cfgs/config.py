@@ -9,7 +9,8 @@ from tools.fprintfLog import fprintf_log
 # the configurations you need to change.
 
 class Config(object):
-    """Base configuration class. For custom configurations, create a
+    """
+    Base configuration class. For custom configurations, create a
     sub-class that inherits from this one and override properties
     that need to be changed.
     """
@@ -30,6 +31,10 @@ class Config(object):
     # Adjust based on your GPU memory and image sizes. Use the highest
     # number that your GPU can handle for best performance.
     IMAGES_PER_GPU = 1
+
+
+    # Training schedule in EPOCH
+    TRAIN_SCHEDULE = [40, 120, 160]
 
     # Number of training steps per epoch
     # This doesn't need to match the size of the training set. Tensorboard
@@ -142,7 +147,9 @@ class Config(object):
     USE_RPN_ROIS = True
 
     def __init__(self):
-        """Set values of computed attributes."""
+        """
+        Set values of computed attributes.
+        """
         # Effective batch size
         if self.GPU_COUNT > 0:
             self.BATCH_SIZE = self.IMAGES_PER_GPU * self.GPU_COUNT
@@ -163,18 +170,19 @@ class Config(object):
              for stride in self.BACKBONE_STRIDES])
 
     def display(self, log_file=False, quiet=False):
-        """Display Configuration values.
-           Save Configuration values to log file.
+        """
+        Display Configuration values.
+        Save Configuration values to log file.
         """
         if log_file:
             # Display and Save
-            fprintf_log("Configurations:", file=log_file, quiet_termi=quiet)
+            fprintf_log("Configurations:", file=log_file)
             print("\nConfigurations:")
             for a in dir(self):
                 if not a.startswith("__") and not callable(getattr(self, a)):
                     print("{:30} {}".format(a, getattr(self, a)))
-                    fprintf_log("{}\t{}".format(a, getattr(self, a)), log_file, quiet_termi=quiet)
-            fprintf_log("\n", log_file, quiet_termi=quiet)
+                    fprintf_log("{}\t{}".format(a, getattr(self, a)), log_file)
+            fprintf_log("\n", log_file)
             print("\n")
 
         else:

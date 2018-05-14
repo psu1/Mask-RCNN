@@ -2,56 +2,15 @@
 Mask R-CNN Training Code
 """
 
-import os
 from models.mask_rcnn import  MaskRCNN
-from cfgs.config import Config
+from models.train_val import *
+
 from utils.coco import CocoDataset, evaluate_coco
 from tools.fprintfLog import fprintf_log
 import datetime
 
-from models.train_val import *
-
-# Root directory of the project
-ROOT_DIR = os.getcwd()
-
-# Path to trained weights file
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
-
-# Directory to save logs and model checkpoints, if not provided
-# through the command line argument --logs
-DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
-
-# Path to save printing logs: DEFAULT_LOGS_DIR
-# DEFAULT_LOGS_DIR --> args.logs --> MaskRCNN (..)
-
-# also modify DEFAULT_DATASET_YEAR in utils.coco.py, if you change it
-DEFAULT_DATASET_YEAR = "2014"
 
 
-
-#  Configurations
-class CocoConfig(Config):
-    """Configuration for training on MS COCO.
-    Derives from the base Config class and overrides values specific
-    to the COCO dataset.
-    """
-    # Give the configuration a recognizable name
-    NAME = "coco"
-
-    # We use one GPU with 8GB memory, which can fit one image.
-    # Adjust down if you use a smaller GPU.
-    IMAGES_PER_GPU = 1
-
-    # Uncomment to train on 8 GPUs (default is 1)
-    GPU_COUNT = 1
-
-    # Number of classes (including background)
-    NUM_CLASSES = 1 + 80  # COCO has 80 classes
-
-
-
-
-#  Training
 if __name__ == '__main__':
     import argparse
 
@@ -144,8 +103,10 @@ if __name__ == '__main__':
 
     # fprintf final config and model details to txt
     if args.command == "train":
+        # print and save config
         config.display(save_log_dir)
-        fprintf_log(model, save_log_dir, quiet_termi=True)
+        # save model details
+        fprintf_log(model, save_log_dir)
 
 
     # Train or evaluate
@@ -169,7 +130,7 @@ if __name__ == '__main__':
         train_model(model,
                     dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=40,
+                    epochs=config.TRAIN_SCHEDULE[0],
                     layers='heads')
 
         # Training - Stage 2
@@ -178,7 +139,7 @@ if __name__ == '__main__':
         train_model(model,
                     dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE,
-                    epochs=120,
+                    epochs=config.TRAIN_SCHEDULE[1],
                     layers='4+')
 
         # Training - Stage 3
@@ -187,7 +148,7 @@ if __name__ == '__main__':
         train_model(model,
                     dataset_train, dataset_val,
                     learning_rate=config.LEARNING_RATE / 10,
-                    epochs=160,
+                    epochs=config.TRAIN_SCHEDULE[2],
                     layers='all')
 
     elif args.command == "evaluate":

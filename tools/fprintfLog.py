@@ -9,12 +9,10 @@ def remove(file_name):
     except:
         pass
 
-def fprintf_log(msg, file=None, init=False, additional_file=None, quiet_termi=False):
+def fprintf_log(msg, file=None, init=False, additional_file=None):
 
     _file = file + '/logs.txt'
 
-    if not quiet_termi:
-        print(msg)
     if file is None:
         pass
     else:

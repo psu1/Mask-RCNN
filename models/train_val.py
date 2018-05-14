@@ -9,12 +9,51 @@ import torch.optim as optim
 import torch.utils.data
 from torch.autograd import Variable
 
+from cfgs.config import Config
 from models.lossFunction import compute_losses
 
 from tools.log import log, printProgressBar
 import tools.visualize as visualize
 from utils.dataLoader import Dataset
 from utils.mask_rcnn_utils import mold_inputs, unmold_detections
+
+
+# Root directory of the project
+ROOT_DIR = os.getcwd()
+
+# Path to trained weights file
+COCO_MODEL_PATH = os.path.join(ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
+
+# Directory to save logs and model checkpoints, if not provided
+# through the command line argument --logs
+DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
+
+# Path to save printing logs: DEFAULT_LOGS_DIR
+# DEFAULT_LOGS_DIR --> args.logs --> MaskRCNN (..)
+
+# also modify DEFAULT_DATASET_YEAR in utils.coco.py, if you change it
+DEFAULT_DATASET_YEAR = "2014"
+
+
+
+#  Configurations
+class CocoConfig(Config):
+    """Configuration for training on MS COCO.
+    Derives from the base Config class and overrides values specific
+    to the COCO dataset.
+    """
+    # Give the configuration a recognizable name
+    NAME = "coco"
+
+    # We use one GPU with 8GB memory, which can fit one image.
+    # Adjust down if you use a smaller GPU.
+    IMAGES_PER_GPU = 1
+
+    # Uncomment to train on 8 GPUs (default is 1)
+    GPU_COUNT = 1
+
+    # Number of classes (including background)
+    NUM_CLASSES = 1 + 80  # COCO has 80 classes
 
 
 def find_last(model):
