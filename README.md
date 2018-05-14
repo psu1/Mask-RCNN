@@ -51,14 +51,14 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) with the correspondin
 
         python main.py train --dataset=/path/to/coco/ --model=coco --download=true
 
-   It will automatically download the COCO dataset in /path/to/coco/ for you.
+   It will automatically download the COCO dataset in ``/path/to/coco/` for you.
 
 4. Install the [Python COCO API](https://github.com/cocodataset/cocoapi) and create a symlink.
 
         ln -s /path/to/coco/cocoapi/PythonAPI/pycocotools/  /lib/pycocotools
     
 4. Download the pretrained models on COCO and ImageNet from [Google Drive](https://drive.google.com/open?id=1LXUgC2IZUYNEoXr05tdqyKFZY0pZyPDc).
-Chnage the corresponding model path (COCO_MODEL_PATH) in main.py and demo.py.
+Chnage the corresponding model path (COCO_MODEL_PATH) in `main.py` and `demo.py`.
 
 ## Demo
 
