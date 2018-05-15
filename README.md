@@ -41,9 +41,9 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
         bash make.sh
         cd ../
 
-3. Download [COCO dataset](http://cocodataset.org/#home). Or you just run
+3. Download [COCO dataset](http://cocodataset.org/#home). Or set `DOWNLOAD: True` in ``coco_train.yaml and run
 
-        python main.py train --dataset=/path/to/coco/ --model=coco --download=true
+        python main.py train --cfg cfgs/coco_train.yaml
 
    It will automatically download the COCO dataset in `/path/to/coco/` for you.
 
@@ -78,17 +78,8 @@ The TRAIN_SCHEDULE, LEARNING_RATE and other parameters can be set in `CocoConfig
 For example, training on COCO dataset:
 
     # Train a new model starting from pre-trained COCO weights
-    python main.py train --dataset=/path/to/coco/ --model=coco
+    python main.py train --cfg cfgs/coco_train.yaml
 
-    # Train a new model starting from ImageNet weights
-    python main.py train --dataset=/path/to/coco/ --model=imagenet
-
-    # Continue training a model that you had trained earlier
-    python main.py train --dataset=/path/to/coco/ --model=/path/to/weights.h5
-
-    # Continue training the last model you trained. This will find
-    # the last trained weights in the model directory.
-    python main.py train --dataset=/path/to/coco/ --model=last
 
 If you have not yet downloaded the COCO dataset you should run the command
 with the download option set, e.g.:
@@ -99,7 +90,7 @@ with the download option set, e.g.:
 You can also run the COCO evaluation code with:
 
     # Run COCO evaluation on the last trained model
-    python main.py evaluate --dataset=/path/to/coco/ --model=last
+    python main.py evaluate --cfg=cfgs/coco_train.yaml --model=last
 
 
 ## Results

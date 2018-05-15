@@ -1,5 +1,6 @@
 DATASET:
-  DEFAULT_DATASET_YEAR: "2014"
+  YEAR: "2014"
+  DOWNLOAD: False
 
 MODEL:
   NAME: coco
@@ -7,6 +8,7 @@ MODEL:
 
 
 TRAIN:
+  WEIGHTS: "pre_train_models/mask_rcnn_coco.pth"
   TRAIN_SCHEDULE: [1, 1, 1]
 
 

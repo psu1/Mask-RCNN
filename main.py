@@ -7,7 +7,7 @@ from models.mask_rcnn import  MaskRCNN
 from models.train_val import *
 
 from utils.coco import CocoDataset, evaluate_coco
-from tools.fprintfLog import fprintf_log, write_to_yaml
+from tools.fprintfLog import fprintf_log
 import datetime
 
 import pprint
@@ -22,10 +22,9 @@ def parse_args():
     parser.add_argument('--cfg', '-c', dest='cfg_file', required=False,
                         help='Config file to run')
 
-    parser.add_argument('--model', required=False,
-                        default='imagenet',
-                        metavar="/path/to/weights.pth",
-                        help="Path to weights .pth file or 'coco'")
+    parser.add_argument('--last', required=False,
+                        default= False,
+                        help="Continue training the last model you trained")
 
     return parser.parse_args()
 
@@ -50,30 +49,19 @@ def main():
         model = model.cuda()
 
     # Select weights file to load
-    if args.model:
-        if args.model.lower() == "coco":
-            model_path = cfg.MODEL.COCO_MODEL_PATH
-        elif args.model.lower() == "last":
-            # Find last trained weights
-            model_path = find_last(model)[1]
-            print('Evaluate on {}'.format(model_path))
-        elif args.model.lower() == "imagenet":
-            # Start from ImageNet trained weights
-            model_path = cfg.MODEL.IMAGENET_MODEL_PATH
-        else:
-            model_path = args.model
+    if args.last:
+        model_path = find_last(model)[1]
+        print('Continue training on {}'.format(model_path))
     else:
-        model_path = "cfg.MODEL.IMAGENET_MODEL_PATH"
+        model_path = os.path.join(cfg.ROOT_DIR, cfg.TRAIN.WEIGHTS)
+        print("Loading weights ", model_path)
+        model.load_weights(model_path)
 
-    # Load weights
-    print("Loading weights ", model_path)
-    model.load_weights(model_path)
 
     # save printing logs to file
     now = datetime.datetime.now()
     save_log_dir = os.path.join(cfg.TRAIN.LOG_DIR, "{}{:%Y%m%dT%H%M}".format(
         cfg.MODEL.NAME.lower(), now))
-
 
     # Train or evaluate
     if args.command == "train":
@@ -85,13 +73,13 @@ def main():
         # Training dataset. Use the training set and 35K from the
         # validation set, as as in the Mask RCNN paper.
         dataset_train = CocoDataset()
-        dataset_train.load_coco(cfg.DATASET.PATH, "train", year=cfg.DATASET.DEFAULT_DATASET_YEAR, auto_download=cfg.DATASET.DOWNLOAD)
-        dataset_train.load_coco(cfg.DATASET.PATH, "valminusminival", year=cfg.DATASET.DEFAULT_DATASET_YEAR, auto_download=cfg.DATASET.DOWNLOAD)
+        dataset_train.load_coco(cfg.DATASET.PATH, "train", year=cfg.DATASET.YEAR, auto_download=cfg.DATASET.DOWNLOAD)
+        dataset_train.load_coco(cfg.DATASET.PATH, "valminusminival", year=cfg.DATASET.YEAR, auto_download=cfg.DATASET.DOWNLOAD)
         dataset_train.prepare()
 
         # Validation dataset
         dataset_val = CocoDataset()
-        dataset_val.load_coco(cfg.DATASET.PATH, "minival", year=cfg.DATASET.DEFAULT_DATASET_YEAR, auto_download=cfg.DATASET.DOWNLOAD)
+        dataset_val.load_coco(cfg.DATASET.PATH, "minival", year=cfg.DATASET.YEAR, auto_download=cfg.DATASET.DOWNLOAD)
         dataset_val.prepare()
 
         # *** This training schedule is an example. Update to your needs ***
@@ -125,7 +113,7 @@ def main():
     elif args.command == "evaluate":
         # Validation dataset
         dataset_val = CocoDataset()
-        coco = dataset_val.load_coco(cfg.DATASET.PATH, "minival", year=cfg.TRAIN.DEFAULT_DATASET_YEAR, return_coco=True,
+        coco = dataset_val.load_coco(cfg.DATASET.PATH, "minival", year=cfg.DATASET.YEAR, return_coco=True,
                                      auto_download=cfg.DATASET.DOWNLOAD)
         dataset_val.prepare()
         print("Running COCO evaluation on {} images.".format(cfg.TEST.NUM_IMG))

@@ -26,7 +26,7 @@ __C.DATASET.PATH = '/path/to/coco'
 __C.DATASET.DOWNLOAD = False
 
 # COCO DATASET YEAR
-__C.DATASET.DEFAULT_DATASET_YEAR = ''
+__C.DATASET.YEAR = '2014'
 # Image mean (RGB)
 __C.DATASET.MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
 
@@ -34,6 +34,8 @@ __C.DATASET.MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
 # Training options
 # ---------------------------------------------------------------------------- #
 __C.TRAIN = AttrDict()
+
+__C.TRAIN.WEIGHTS = b''
 
 __C.TRAIN.STEPS_PER_EPOCH = 1000
 __C.TRAIN.VALIDATION_STEPS = 50
@@ -203,8 +205,8 @@ def set_cfg_value():
         Set values of computed attributes.
         """
         # Pre-train model and log file path
-        __C.MODEL.IMAGENET_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/resnet50_imagenet.pth")
-        __C.MODEL.COCO_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
+        # __C.MODEL.IMAGENET_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/resnet50_imagenet.pth")
+        # __C.MODEL.COCO_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
         __C.TRAIN.LOG_DIR = os.path.join(__C.ROOT_DIR, "logs")
         # demo img dir
         __C.DEMO.IMAGE_DIR = os.path.join(__C.ROOT_DIR, "data/images")
