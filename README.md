@@ -83,7 +83,7 @@ For example, training on COCO dataset:
 You can also run the COCO evaluation code with:
 
     # Run COCO evaluation on the last trained model
-    python main.py evaluate --cfg=cfgs/coco_train.yaml --model=last
+    python main.py evaluate --cfg=cfgs/coco_train.yaml --last=True
 
 
 ## Results

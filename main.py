@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument('--cfg', '-c', dest='cfg_file', required=False,
                         help='Config file to run')
 
-    parser.add_argument('--last', required=False,
+    parser.add_argument('--last', required=False, type=bool,
                         default= False,
                         help="Continue training the last model you trained")
 

@@ -25,8 +25,9 @@ __C.DATASET.PATH = '/path/to/coco'
 #Automatically download and unzip MS-COCO files
 __C.DATASET.DOWNLOAD = False
 
-# COCO DATASET YEAR
+# Year of the MS-COCO dataset (2014 or 2017)
 __C.DATASET.YEAR = '2014'
+
 # Image mean (RGB)
 __C.DATASET.MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
 
