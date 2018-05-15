@@ -33,8 +33,6 @@ def main():
 
     # Configuration
     cfg_from_file(args.cfg_file)
-
-    # Inference config value and print it
     set_cfg_value()
     print(pprint.pformat(cfg))
 
