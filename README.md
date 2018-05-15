@@ -41,7 +41,7 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
         bash make.sh
         cd ../
 
-3. Download [COCO dataset](http://cocodataset.org/#home). Or set `DOWNLOAD: True` in ``coco_train.yaml and run
+3. Download [COCO dataset](http://cocodataset.org/#home). Or set `DOWNLOAD: True` in coco_train.yaml` and run
 
         python main.py train --cfg cfgs/coco_train.yaml
 
@@ -61,7 +61,7 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
     
 4. Download the pretrained models on COCO and ImageNet from [Google Drive](https://drive.google.com/open?id=1LXUgC2IZUYNEoXr05tdqyKFZY0pZyPDc).
 
-    Chnage the corresponding model path (COCO_MODEL_PATH) in `main.py` and `demo.py`.
+    Chnage the corresponding model path (COCO_MODEL_PATH) in `cfgs/coco_train_sample.yaml`.
 
 ## Demo
 

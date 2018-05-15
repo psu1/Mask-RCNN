@@ -1,0 +1,16 @@
+DATASET:
+  PATH: '/media/jaden/DeepLearningCode/data/coco'
+  YEAR: 2014
+  DOWNLOAD: False
+
+MODEL:
+  NAME: 'coco'
+  NUM_CLASSES: 81
+
+
+TRAIN:
+  WEIGHTS: "pre_train_models/mask_rcnn_coco.pth"
+  TRAIN_SCHEDULE: [1, 1, 1]
+
+
+
