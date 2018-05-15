@@ -7,11 +7,12 @@ import numpy as np
 import math
 from utils.collections import AttrDict
 
+from easydict import EasyDict as edict
 
 __C = AttrDict()
 # Consumers can get config by:
 #   from core.config import cfg
-config = __C
+cfg = __C
 
 
 # ---------------------------------------------------------------------------- #
@@ -20,13 +21,13 @@ config = __C
 __C.DATASET = AttrDict()
 
 # PATH TO COCO
-__C.DATASET.PATH = '/path/to/coco'
+__C.DATASET.PATH = ''
 
 #Automatically download and unzip MS-COCO files
 __C.DATASET.DOWNLOAD = False
 
 # Year of the MS-COCO dataset (2014 or 2017)
-__C.DATASET.YEAR = '2014'
+__C.DATASET.YEAR = 2014
 
 # Image mean (RGB)
 __C.DATASET.MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
@@ -36,7 +37,7 @@ __C.DATASET.MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
 # ---------------------------------------------------------------------------- #
 __C.TRAIN = AttrDict()
 
-__C.TRAIN.WEIGHTS = b''
+__C.TRAIN.WEIGHTS = ''
 
 __C.TRAIN.STEPS_PER_EPOCH = 1000
 __C.TRAIN.VALIDATION_STEPS = 50
@@ -107,8 +108,8 @@ __C.TEST.NUM_IMG = 500
 # Model options
 # ---------------------------------------------------------------------------- #
 __C.MODEL = AttrDict()
-__C.MODEL.NAME = b''
-__C.MODEL.CONV_BODY = b''
+__C.MODEL.NAME = ''
+__C.MODEL.CONV_BODY = ''
 
 # Number of classification classes (including background)
 __C.MODEL.NUM_CLASSES = 1 + 80
@@ -172,7 +173,6 @@ __C.FPN = AttrDict()
 __C.FPN.BACKBONE_STRIDES = [4, 8, 16, 32, 64]
 
 
-
 # ---------------------------------------------------------------------------- #
 # Solver options
 # ---------------------------------------------------------------------------- #
@@ -192,22 +192,18 @@ __C.IMAGES_PER_GPU = 1
 # Root directory of project
 __C.ROOT_DIR = os.getcwd()
 
-
 # For reproducibility
 __C.RNG_SEED = 3
 
 # DEMO
 __C.DEMO = AttrDict()
 
-
+__C.DEMO.WEIGHTS = 'pre_train_models/mask_rcnn_coco.pth'
 
 def set_cfg_value():
         """
         Set values of computed attributes.
         """
-        # Pre-train model and log file path
-        # __C.MODEL.IMAGENET_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/resnet50_imagenet.pth")
-        # __C.MODEL.COCO_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
         __C.TRAIN.LOG_DIR = os.path.join(__C.ROOT_DIR, "logs")
         # demo img dir
         __C.DEMO.IMAGE_DIR = os.path.join(__C.ROOT_DIR, "data/images")
@@ -231,7 +227,38 @@ def set_cfg_value():
              for stride in __C.FPN.BACKBONE_STRIDES])
 
 
-
+#
+# def _merge_a_into_b(a, b):
+#     """Merge config dictionary a into config dictionary b, clobbering the
+#     options in b whenever they are also specified in a.
+#     """
+#     if type(a) is not AttrDict:
+#         return
+#
+#     for k, v in a.iteritems():
+#         # a must specify keys that are in b
+#         if not b.has_key(k):
+#             raise KeyError('{} is not a valid config key'.format(k))
+#
+#         # the types must match, too
+#         old_type = type(b[k])
+#         if old_type is not type(v):
+#             if isinstance(b[k], np.ndarray):
+#                 v = np.array(v, dtype=b[k].dtype)
+#             else:
+#                 raise ValueError(('Type mismatch ({} vs. {}) '
+#                                   'for config key: {}').format(type(b[k]),
+#                                                                type(v), k))
+#
+#         # recursively merge dicts
+#         if type(v) is AttrDict:
+#             try:
+#                 _merge_a_into_b(a[k], b[k])
+#             except:
+#                 print('Error under config key: {}'.format(k))
+#                 raise
+#         else:
+#             b[k] = v
 
 def _merge_a_into_b(a, b):
     """Merge config dictionary a into config dictionary b, clobbering the
@@ -285,7 +312,6 @@ def cfg_from_file(filename):
     import yaml
     with open(filename, 'r') as f:
         yaml_cfg = yaml.load(f)
-        # yaml_cfg = _config_mapping_rules(yaml_cfg)
         yaml_cfg = AttrDict(yaml_cfg)
 
     _merge_a_into_b(yaml_cfg, __C)

@@ -11,4 +11,4 @@ pycocotools
 python_operations.ipynb
 PATH.sh
 scripts/
-*.yaml
+coco_train_baseline.yaml

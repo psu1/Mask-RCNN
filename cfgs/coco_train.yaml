@@ -1,9 +1,10 @@
 DATASET:
-  YEAR: "2014"
+  PATH: '/media/jaden/DeepLearningCode/data/coco'
+  YEAR: 2014
   DOWNLOAD: False
 
 MODEL:
-  NAME: coco
+  NAME: 'coco'
   NUM_CLASSES: 81
 
 

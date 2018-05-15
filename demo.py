@@ -3,7 +3,7 @@ import random
 import skimage.io
 import matplotlib.pyplot as plt
 
-from models.config import config, set_cfg_value
+from models.config import cfg, set_cfg_value, cfg_from_file
 from models.mask_rcnn import  MaskRCNN
 import tools.visualize as visualize
 
@@ -32,21 +32,22 @@ class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
                'teddy bear', 'hair drier', 'toothbrush']
 
 # load and inference default config
+cfg_from_file('cfgs/coco_train.yaml')
 set_cfg_value()
 
 
 # Create model object.
-model = MaskRCNN(config=config)
-if config.GPU_COUNT:
+model = MaskRCNN(config=cfg)
+if cfg.GPU_COUNT:
     model = model.cuda()
 
 # Load weights trained on MS-COCO
-model.load_state_dict(torch.load(config.MODEL.COCO_MODEL_PATH))
+model.load_state_dict(torch.load( cfg.DEMO.WEIGHTS))
 
 
 # Load a random image from the images folder
-file_names = next(os.walk(config.DEMO.IMAGE_DIR))[2]
-image = skimage.io.imread(os.path.join(config.DEMO.IMAGE_DIR, random.choice(file_names)))
+file_names = next(os.walk(cfg.DEMO.IMAGE_DIR))[2]
+image = skimage.io.imread(os.path.join(cfg.DEMO.IMAGE_DIR, random.choice(file_names)))
 # image = skimage.io.imread(os.path.join(cfg.DEMO.IMAGE_DIR, 'img5.jpg'))
 
 # Run detection

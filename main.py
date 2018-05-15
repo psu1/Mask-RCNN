@@ -2,7 +2,7 @@
 Mask R-CNN Training Code
 """
 import argparse
-from models.config import config, set_cfg_value, cfg_from_file
+from models.config import cfg, set_cfg_value, cfg_from_file
 from models.mask_rcnn import  MaskRCNN
 from models.train_val import *
 
@@ -31,13 +31,8 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # args.command = 'train'
-
     # Configuration
-    if args.cfg_file is not None:
-        cfg_from_file(args.cfg_file)
-    else:
-        cfg = config
+    cfg_from_file(args.cfg_file)
 
     # Inference config value and print it
     set_cfg_value()
