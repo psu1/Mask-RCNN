@@ -1,7 +1,5 @@
-import math
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.autograd import Function
 
 from ._ext import crop_and_resize as _backend

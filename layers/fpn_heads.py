@@ -8,7 +8,6 @@ from layers.roi_align import pyramid_roi_align
 from tools.py_utils import SamePad2d
 
 
-#
 
 class Classifier(nn.Module):
     def __init__(self, depth, pool_size, image_shape, num_classes):

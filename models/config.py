@@ -1,0 +1,315 @@
+"""Mask R-CNN config system.
+"""
+from __future__ import unicode_literals
+
+import os
+import numpy as np
+import math
+from utils.collections import AttrDict
+
+
+__C = AttrDict()
+# Consumers can get config by:
+#   from core.config import cfg
+config = __C
+
+
+# ---------------------------------------------------------------------------- #
+# Datasset
+# ---------------------------------------------------------------------------- #
+__C.DATASET = AttrDict()
+
+# PATH TO COCO
+__C.DATASET.PATH = '/path/to/coco'
+
+#Automatically download and unzip MS-COCO files
+__C.DATASET.DOWNLOAD = False
+
+# COCO DATASET YEAR
+__C.DATASET.DEFAULT_DATASET_YEAR = ''
+# Image mean (RGB)
+__C.DATASET.MEAN_PIXEL = np.array([123.7, 116.8, 103.9])
+
+# ---------------------------------------------------------------------------- #
+# Training options
+# ---------------------------------------------------------------------------- #
+__C.TRAIN = AttrDict()
+
+__C.TRAIN.STEPS_PER_EPOCH = 1000
+__C.TRAIN.VALIDATION_STEPS = 50
+
+# Training schedule in EPOCH
+__C.TRAIN.TRAIN_SCHEDULE = [1, 1, 1]
+
+# Maximum number of ground truth instances to use in one image
+__C.TRAIN.MAX_GT_INSTANCES = 100
+
+# Input image resing
+# Images are resized such that the smallest side is >= IMAGE_MIN_DIM and
+# the longest side is <= IMAGE_MAX_DIM. In case both conditions can't
+# be satisfied together the IMAGE_MAX_DIM is enforced.
+__C.TRAIN.IMAGE_MIN_DIM = 800
+__C.TRAIN.IMAGE_MAX_DIM = 1024
+
+# If True, pad images with zeros such that they're (max_dim by max_dim)
+__C.TRAIN.IMAGE_PADDING = True  # currently, the False option is not supported
+
+
+# Max number of final detections
+__C.TRAIN.DETECTION_MAX_INSTANCES = 100
+
+# Minimum probability value to accept a detected instance
+# ROIs below this threshold are skipped
+__C.TRAIN.DETECTION_MIN_CONFIDENCE = 0.7
+
+# Non-maximum suppression threshold for detection
+__C.TRAIN.DETECTION_NMS_THRESHOLD = 0.3
+
+
+# ---------------------------------------------------------------------------- #
+# ROIS
+# ---------------------------------------------------------------------------- #
+__C.ROIS = AttrDict()
+__C.ROIS.POOL_SIZE = 7
+
+# Number of ROIs per image to feed to classifier/mask heads
+# The Mask RCNN paper uses 512 but often the RPN doesn't generate
+# enough positive proposals to fill this and keep a positive:negative
+# ratio of 1:3. You can increase the number of proposals by adjusting
+# the RPN NMS threshold.
+__C.ROIS.NUM_PER_IMAGE = 200
+
+# Percent of positive ROIs used to train classifier/mask heads
+__C.ROIS.POSITIVE_RATIO = 0.33
+
+# ROIs kept after non-maximum supression (training)
+__C.ROIS.POST_NMS_ROIS = 2000
+
+
+# ---------------------------------------------------------------------------- #
+# Inference options
+# ---------------------------------------------------------------------------- #
+__C.TEST = AttrDict()
+
+# ROIs kept after non-maximum supression (inference)
+__C.TEST.POST_NMS_ROIS = 1000
+
+__C.TEST.GPU_COUNT = 1
+__C.TEST.IMAGES_PER_GPU = 1
+
+# Images to use for evaluation (default=500)
+__C.TEST.NUM_IMG = 500
+
+# ---------------------------------------------------------------------------- #
+# Model options
+# ---------------------------------------------------------------------------- #
+__C.MODEL = AttrDict()
+__C.MODEL.NAME = b''
+__C.MODEL.CONV_BODY = b''
+
+# Number of classification classes (including background)
+__C.MODEL.NUM_CLASSES = 1 + 80
+
+# ---------------------------------------------------------------------------- #
+# Mask-RCNN options
+# ---------------------------------------------------------------------------- #
+__C.MRCNN = AttrDict()
+
+# Pooled ROIs
+__C.MRCNN.POOL_SIZE = 14
+__C.MRCNN.MASK_SHAPE = [28, 28]
+
+# If enabled, resizes instance masks to a smaller size to reduce
+# memory load. Recommended when using high-resolution images.
+__C.MRCNN.USE_MINI_MASK = True
+__C.MRCNN.MINI_MASK_SHAPE = (56, 56)  # (height, width) of the mini-mask
+
+
+# ---------------------------------------------------------------------------- #
+# RPN options
+# ---------------------------------------------------------------------------- #
+__C.RPN = AttrDict()
+# Length of square anchor side in pixels
+__C.RPN.ANCHOR_SCALES = (32, 64, 128, 256, 512)
+
+# Ratios of anchors at each cell (width/height)
+__C.RPN.ANCHOR_RATIOS = [0.5, 1, 2]
+
+# How many anchors per image to use for RPN training
+__C.RPN.TRAIN_ANCHORS_PER_IMAGE = 256
+
+# Anchor stride
+# If 1 then anchors are created for each cell in the backbone feature map.
+# If 2, then anchors are created for every other cell, and so on.
+__C.RPN.ANCHOR_STRIDE = 1
+
+# Non-max suppression threshold to filter RPN proposals.
+# You can reduce this during training to generate more propsals.
+__C.RPN.NMS_THRESHOLD = 0.7
+
+# Use RPN ROIs or externally generated ROIs for training
+# Keep this True for most situations. Set to False if you want to train
+# the head branches on ROI generated by code rather than the ROIs from
+# the RPN. For example, to debug the classifier head without having to
+# train the RPN.
+__C.RPN.USE_RPN_ROIS = True
+
+# Bounding box refinement standard deviation for RPN and final detections.
+__C.RPN.BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
+
+__C.BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
+
+
+# ---------------------------------------------------------------------------- #
+# FPN options
+# ---------------------------------------------------------------------------- #
+__C.FPN = AttrDict()
+# The strides of each layer of the FPN Pyramid. These values
+# are based on a Resnet101 backbone.
+__C.FPN.BACKBONE_STRIDES = [4, 8, 16, 32, 64]
+
+
+
+# ---------------------------------------------------------------------------- #
+# Solver options
+# ---------------------------------------------------------------------------- #
+__C.SOLVER = AttrDict()
+__C.SOLVER.BASE_LR = 0.001
+__C.SOLVER.MOMENTUM = 0.9
+__C.SOLVER.WEIGHT_DECAY = 0.0005
+
+
+# ---------------------------------------------------------------------------- #
+# Misc options
+# ---------------------------------------------------------------------------- #
+# Number of GPUs to use
+__C.GPU_COUNT = 1
+__C.IMAGES_PER_GPU = 1
+
+# Root directory of project
+__C.ROOT_DIR = os.getcwd()
+
+
+# For reproducibility
+__C.RNG_SEED = 3
+
+# DEMO
+__C.DEMO = AttrDict()
+
+
+
+def set_cfg_value():
+        """
+        Set values of computed attributes.
+        """
+        # Pre-train model and log file path
+        __C.MODEL.IMAGENET_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/resnet50_imagenet.pth")
+        __C.MODEL.COCO_MODEL_PATH = os.path.join(__C.ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
+        __C.TRAIN.LOG_DIR = os.path.join(__C.ROOT_DIR, "logs")
+        # demo img dir
+        __C.DEMO.IMAGE_DIR = os.path.join(__C.ROOT_DIR, "data/images")
+        # Effective batch size
+        if __C.GPU_COUNT > 0:
+            __C.TRAIN.BATCH_SIZE = __C.IMAGES_PER_GPU * __C.GPU_COUNT
+        else:
+            __C.TRAIN.BATCH_SIZE = __C.IMAGES_PER_GPU
+
+        # Adjust step size based on batch size
+        __C.TRAIN.STEPS_PER_EPOCH = __C.TRAIN.BATCH_SIZE * __C.TRAIN.STEPS_PER_EPOCH
+
+        # Input image size
+        __C.TRAIN.IMAGE_SHAPE = np.array(
+            [__C.TRAIN.IMAGE_MAX_DIM, __C.TRAIN.IMAGE_MAX_DIM, 3])
+
+        # Compute backbone size from input image size
+        __C.FPN.BACKBONE_SHAPES = np.array(
+            [[int(math.ceil(__C.TRAIN.IMAGE_SHAPE[0] / stride)),
+              int(math.ceil(__C.TRAIN.IMAGE_SHAPE[1] / stride))]
+             for stride in __C.FPN.BACKBONE_STRIDES])
+
+
+
+
+def _merge_a_into_b(a, b):
+    """Merge config dictionary a into config dictionary b, clobbering the
+    options in b whenever they are also specified in a.
+    """
+    from ast import literal_eval
+    if not isinstance(a, AttrDict):
+        return
+
+    for k, v in a.items():
+        # a must specify keys that are in b
+        if k not in b:
+            if k + '_deprecated' in b:
+                # logger.warn('Config key {} is deprecated, ignoring'.format(k))
+                return
+            else:
+                raise KeyError('{} is not a valid config key'.format(k))
+
+        if type(v) is dict:
+            a[k] = v = AttrDict(v)
+        if isinstance(v, str):  # NoQA
+            try:
+                v = literal_eval(v)
+            except BaseException:
+                pass
+
+        # the types must match, too (with some exceptions)
+        old_type = type(b[k])
+        if old_type is not type(v) and v is not None:
+            if isinstance(b[k], np.ndarray):
+                v = np.array(v, dtype=b[k].dtype)
+            elif isinstance(b[k], str) and isinstance(v, str):  # NoQA
+                v = str(v)
+            else:
+                raise ValueError(
+                    'Type mismatch ({} vs. {}) for config key: {}'.format(
+                        type(b[k]), type(v), k))
+
+        # recursively merge dicts
+        if isinstance(v, AttrDict):
+            try:
+                _merge_a_into_b(a[k], b[k])
+            except BaseException:
+                # logger.critical('Error under config key: {}'.format(k))
+                raise
+        else:
+            b[k] = v
+
+def cfg_from_file(filename):
+    """Load a config file and merge it into the default options."""
+    import yaml
+    with open(filename, 'r') as f:
+        yaml_cfg = yaml.load(f)
+        # yaml_cfg = _config_mapping_rules(yaml_cfg)
+        yaml_cfg = AttrDict(yaml_cfg)
+
+    _merge_a_into_b(yaml_cfg, __C)
+
+
+def cfg_from_cfg(yaml_cfg):
+    _merge_a_into_b(yaml_cfg, __C)
+
+
+def cfg_from_list(cfg_list):
+    """Set config keys via list (e.g., from command line)."""
+    from ast import literal_eval
+    assert len(cfg_list) % 2 == 0
+    for k, v in zip(cfg_list[0::2], cfg_list[1::2]):
+        key_list = k.split('.')
+        d = __C
+        for subkey in key_list[:-1]:
+            assert subkey in d, 'Config key {} not found'.format(subkey)
+            d = d[subkey]
+        subkey = key_list[-1]
+        assert subkey in d, 'Config key {} not found'.format(subkey)
+        try:
+            value = literal_eval(v)
+        except BaseException:
+            # handle the case when v is a string literal
+            value = v
+        assert isinstance(value, type(d[subkey])) or d[subkey] is None, \
+            'type {} does not match original type {}'.format(
+                type(value), type(d[subkey]))
+        d[subkey] = value

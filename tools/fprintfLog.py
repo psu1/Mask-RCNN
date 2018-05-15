@@ -2,6 +2,7 @@
 Save logs to txt file.
 '''
 import os
+import yaml
 
 def remove(file_name):
     try:
@@ -25,3 +26,12 @@ def fprintf_log(msg, file=None, init=False, additional_file=None):
             # TODO (low): a little buggy here: no removal of previous additional_file
             with open(additional_file, 'a') as addition_log:
                 addition_log.write('%s\n' % msg)
+
+
+def  write_to_yaml(msg, file=None):
+
+    _file = file + 'cfg.yaml'
+
+    with open(_file, 'w') as outfile:
+        yaml.dump(msg, outfile, default_flow_style=False)
+

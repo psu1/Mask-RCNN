@@ -124,8 +124,8 @@ def detection_target_layer(proposals, gt_class_ids, gt_boxes, gt_masks, config):
         # pdb.set_trace()
         positive_indices = torch.nonzero(positive_roi_bool)[:, 0]
 
-        positive_count = int(config.TRAIN_ROIS_PER_IMAGE *
-                             config.ROI_POSITIVE_RATIO)
+        positive_count = int(config.ROIS.NUM_PER_IMAGE *
+                             config.ROIS.POSITIVE_RATIO)
         #================should it be sorted by IOU?==========
         rand_idx = torch.randperm(positive_indices.size()[0])
         rand_idx = rand_idx[:positive_count]
@@ -153,7 +153,7 @@ def detection_target_layer(proposals, gt_class_ids, gt_boxes, gt_masks, config):
 
         # Compute mask targets
         boxes = positive_rois
-        if config.USE_MINI_MASK:
+        if config.MRCNN.USE_MINI_MASK:
             # Transform ROI corrdinates from normalized image space
             # to normalized mini-mask space.
             y1, x1, y2, x2 = positive_rois.chunk(4, dim=1)
@@ -168,7 +168,7 @@ def detection_target_layer(proposals, gt_class_ids, gt_boxes, gt_masks, config):
         box_ids = Variable(torch.arange(roi_masks.size()[0]), requires_grad=False).int()
         if config.GPU_COUNT:
             box_ids = box_ids.cuda()
-        masks = Variable(CropAndResizeFunction(config.MASK_SHAPE[0], config.MASK_SHAPE[1], 0)(roi_masks.unsqueeze(1), boxes, box_ids).data, requires_grad=False)
+        masks = Variable(CropAndResizeFunction(config.MRCNN.MASK_SHAPE[0], config.MRCNN.MASK_SHAPE[1], 0)(roi_masks.unsqueeze(1), boxes, box_ids).data, requires_grad=False)
         masks = masks.squeeze(1)
 
         # Threshold mask pixels at 0.5 to have GT masks be 0 or 1 to use with
@@ -183,7 +183,7 @@ def detection_target_layer(proposals, gt_class_ids, gt_boxes, gt_masks, config):
     # Negative ROIs. Add enough to maintain positive:negative ratio.
     if torch.nonzero(negative_roi_bool).size() != torch.Size([0]) and positive_count>0:
         negative_indices = torch.nonzero(negative_roi_bool)[:, 0]
-        r = 1.0 / config.ROI_POSITIVE_RATIO
+        r = 1.0 / config.ROIS.POSITIVE_RATIO
         negative_count = int(r * positive_count - positive_count)
         rand_idx = torch.randperm(negative_indices.size()[0])
         rand_idx = rand_idx[:negative_count]
@@ -207,7 +207,7 @@ def detection_target_layer(proposals, gt_class_ids, gt_boxes, gt_masks, config):
         if config.GPU_COUNT:
             zeros = zeros.cuda()
         deltas = torch.cat([deltas, zeros], dim=0)
-        zeros = Variable(torch.zeros(negative_count,config.MASK_SHAPE[0],config.MASK_SHAPE[1]), requires_grad=False)
+        zeros = Variable(torch.zeros(negative_count,config.MRCNN.MASK_SHAPE[0],config.MRCNN.MASK_SHAPE[1]), requires_grad=False)
         if config.GPU_COUNT:
             zeros = zeros.cuda()
         masks = torch.cat([masks, zeros], dim=0)
@@ -223,7 +223,7 @@ def detection_target_layer(proposals, gt_class_ids, gt_boxes, gt_masks, config):
         if config.GPU_COUNT:
             zeros = zeros.cuda()
         deltas = zeros
-        zeros = Variable(torch.zeros(negative_count,config.MASK_SHAPE[0],config.MASK_SHAPE[1]), requires_grad=False)
+        zeros = Variable(torch.zeros(negative_count,config.MRCNN.MASK_SHAPE[0],config.MRCNN.MASK_SHAPE[1]), requires_grad=False)
         if config.GPU_COUNT:
             zeros = zeros.cuda()
         masks = zeros
@@ -284,13 +284,13 @@ def refine_detections(rois, probs, deltas, window, config):
 
     # Apply bounding box deltas
     # Shape: [boxes, (y1, x1, y2, x2)] in normalized coordinates
-    std_dev = Variable(torch.from_numpy(np.reshape(config.RPN_BBOX_STD_DEV, [1, 4])).float(), requires_grad=False)
+    std_dev = Variable(torch.from_numpy(np.reshape(config.RPN.BBOX_STD_DEV, [1, 4])).float(), requires_grad=False)
     if config.GPU_COUNT:
         std_dev = std_dev.cuda()
     refined_rois = apply_box_deltas(rois, deltas_specific * std_dev)
 
     # Convert coordiates to image domain
-    height, width = config.IMAGE_SHAPE[:2]
+    height, width = config.TRAIN.IMAGE_SHAPE[:2]
     scale = Variable(torch.from_numpy(np.array([height, width, height, width])).float(), requires_grad=False)
     if config.GPU_COUNT:
         scale = scale.cuda()
@@ -308,8 +308,8 @@ def refine_detections(rois, probs, deltas, window, config):
     keep_bool = class_ids>0
 
     # Filter out low confidence boxes
-    if config.DETECTION_MIN_CONFIDENCE:
-        keep_bool = keep_bool & (class_scores >= config.DETECTION_MIN_CONFIDENCE)
+    if config.TRAIN.DETECTION_MIN_CONFIDENCE:
+        keep_bool = keep_bool & (class_scores >= config.TRAIN.DETECTION_MIN_CONFIDENCE)
     keep = torch.nonzero(keep_bool)[:,0]
 
     # Apply per-class NMS
@@ -327,7 +327,7 @@ def refine_detections(rois, probs, deltas, window, config):
         ix_scores, order = ix_scores.sort(descending=True)
         ix_rois = ix_rois[order.data,:]
 
-        class_keep = nms(torch.cat((ix_rois, ix_scores.unsqueeze(1)), dim=1).data, config.DETECTION_NMS_THRESHOLD)
+        class_keep = nms(torch.cat((ix_rois, ix_scores.unsqueeze(1)), dim=1).data, config.TRAIN.DETECTION_NMS_THRESHOLD)
 
         # Map indicies
         class_keep = keep[ixs[order[class_keep].data].data]
@@ -339,7 +339,7 @@ def refine_detections(rois, probs, deltas, window, config):
     keep = intersect1d(keep, nms_keep)
 
     # Keep top detections
-    roi_count = config.DETECTION_MAX_INSTANCES
+    roi_count = config.TRAIN.DETECTION_MAX_INSTANCES
     top_ids = class_scores[keep.data].sort(descending=True)[1][:roi_count]
     keep = keep[top_ids.data]
 

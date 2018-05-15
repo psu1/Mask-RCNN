@@ -3,44 +3,14 @@ import random
 import skimage.io
 import matplotlib.pyplot as plt
 
-from models.train_val import CocoConfig
+from models.config import config, set_cfg_value
 from models.mask_rcnn import  MaskRCNN
 import tools.visualize as visualize
 
 import torch
 
 from models.train_val import detect
-# Root directory of the project
-ROOT_DIR = os.getcwd()
 
-# Directory to save logs and trained model
-MODEL_DIR = os.path.join(ROOT_DIR, "logs")
-
-# Path to trained weights file
-# Download this file and place in the root of your
-# project (See README file for details)
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
-
-# Directory of images to run detection on
-IMAGE_DIR = os.path.join(ROOT_DIR, "data/images")
-
-class InferenceConfig(CocoConfig):
-    # Set batch size to 1 since we'll be running inference on
-    # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
-    # GPU_COUNT = 0 for CPU
-    GPU_COUNT = 1
-    IMAGES_PER_GPU = 1
-
-config = InferenceConfig()
-config.display()
-
-# Create model object.
-model = MaskRCNN(model_dir=MODEL_DIR, config=config)
-if config.GPU_COUNT:
-    model = model.cuda()
-
-# Load weights trained on MS-COCO
-model.load_state_dict(torch.load(COCO_MODEL_PATH))
 
 # COCO Class names
 # Index of the class in the list is its ID. For example, to get ID of
@@ -61,10 +31,23 @@ class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
                'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
                'teddy bear', 'hair drier', 'toothbrush']
 
+# load and inference default config
+set_cfg_value()
+
+
+# Create model object.
+model = MaskRCNN(config=config)
+if config.GPU_COUNT:
+    model = model.cuda()
+
+# Load weights trained on MS-COCO
+model.load_state_dict(torch.load(config.MODEL.COCO_MODEL_PATH))
+
+
 # Load a random image from the images folder
-file_names = next(os.walk(IMAGE_DIR))[2]
-image = skimage.io.imread(os.path.join(IMAGE_DIR, random.choice(file_names)))
-# image = skimage.io.imread(os.path.join(IMAGE_DIR, 'img5.jpg'))
+file_names = next(os.walk(config.DEMO.IMAGE_DIR))[2]
+image = skimage.io.imread(os.path.join(config.DEMO.IMAGE_DIR, random.choice(file_names)))
+# image = skimage.io.imread(os.path.join(cfg.DEMO.IMAGE_DIR, 'img5.jpg'))
 
 # Run detection
 results = detect(model, [image])

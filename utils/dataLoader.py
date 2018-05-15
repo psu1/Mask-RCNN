@@ -39,9 +39,9 @@ def load_image_gt(dataset, config, image_id, augment=False,
     shape = image.shape
     image, window, scale, padding = utils.resize_image(
         image,
-        min_dim=config.IMAGE_MIN_DIM,
-        max_dim=config.IMAGE_MAX_DIM,
-        padding=config.IMAGE_PADDING)
+        min_dim=config.TRAIN.IMAGE_MIN_DIM,
+        max_dim=config.TRAIN.IMAGE_MAX_DIM,
+        padding=config.TRAIN.IMAGE_PADDING)
     mask = utils.resize_mask(mask, scale, padding)
 
     # Random horizontal flips.
@@ -64,7 +64,7 @@ def load_image_gt(dataset, config, image_id, augment=False,
 
     # Resize masks to smaller size to reduce memory usage
     if use_mini_mask:
-        mask = utils.minimize_mask(bbox, mask, config.MINI_MASK_SHAPE)
+        mask = utils.minimize_mask(bbox, mask, config.MRCNN.MINI_MASK_SHAPE)
 
     # Image meta data
     image_meta = compose_image_meta(image_id, shape, window, active_class_ids)
@@ -87,7 +87,7 @@ def build_rpn_targets(image_shape, anchors, gt_class_ids, gt_boxes, config):
     # RPN Match: 1 = positive anchor, -1 = negative anchor, 0 = neutral
     rpn_match = np.zeros([anchors.shape[0]], dtype=np.int32)
     # RPN bounding boxes: [max anchors per image, (dy, dx, log(dh), log(dw))]
-    rpn_bbox = np.zeros((config.RPN_TRAIN_ANCHORS_PER_IMAGE, 4))
+    rpn_bbox = np.zeros((config.RPN.TRAIN_ANCHORS_PER_IMAGE, 4))
 
     # Handle COCO crowds
     # A crowd box in COCO is a bounding box around several instances. Exclude
@@ -133,14 +133,14 @@ def build_rpn_targets(image_shape, anchors, gt_class_ids, gt_boxes, config):
     # Subsample to balance positive and negative anchors
     # Don't let positives be more than half the anchors
     ids = np.where(rpn_match == 1)[0]
-    extra = len(ids) - (config.RPN_TRAIN_ANCHORS_PER_IMAGE // 2)
+    extra = len(ids) - (config.RPN.TRAIN_ANCHORS_PER_IMAGE // 2)
     if extra > 0:
         # Reset the extra ones to neutral
         ids = np.random.choice(ids, extra, replace=False)
         rpn_match[ids] = 0
     # Same for negative proposals
     ids = np.where(rpn_match == -1)[0]
-    extra = len(ids) - (config.RPN_TRAIN_ANCHORS_PER_IMAGE -
+    extra = len(ids) - (config.RPN.TRAIN_ANCHORS_PER_IMAGE -
                         np.sum(rpn_match == 1))
     if extra > 0:
         # Rest the extra ones to neutral
@@ -176,7 +176,7 @@ def build_rpn_targets(image_shape, anchors, gt_class_ids, gt_boxes, config):
             np.log(gt_w / a_w),
         ]
         # Normalize
-        rpn_bbox[ix] /= config.RPN_BBOX_STD_DEV
+        rpn_bbox[ix] /= config.RPN.BBOX_STD_DEV
         ix += 1
 
     return rpn_match, rpn_bbox
@@ -221,18 +221,18 @@ class Dataset(torch.utils.data.Dataset):
 
         # Anchors
         # [anchor_count, (y1, x1, y2, x2)]
-        self.anchors = utils.generate_pyramid_anchors(config.RPN_ANCHOR_SCALES,
-                                                 config.RPN_ANCHOR_RATIOS,
-                                                 config.BACKBONE_SHAPES,
-                                                 config.BACKBONE_STRIDES,
-                                                 config.RPN_ANCHOR_STRIDE)
+        self.anchors = utils.generate_pyramid_anchors(config.RPN.ANCHOR_SCALES,
+                                                 config.RPN.ANCHOR_RATIOS,
+                                                 config.FPN.BACKBONE_SHAPES,
+                                                 config.FPN.BACKBONE_STRIDES,
+                                                 config.RPN.ANCHOR_STRIDE)
 
     def __getitem__(self, image_index):
         # Get GT bounding boxes and masks for image.
         image_id = self.image_ids[image_index]
         image, image_metas, gt_class_ids, gt_boxes, gt_masks = \
             load_image_gt(self.dataset, self.config, image_id, augment=self.augment,
-                          use_mini_mask=self.config.USE_MINI_MASK)
+                          use_mini_mask=self.config.MRCNN.USE_MINI_MASK)
 
         # Skip images that have no instances. This can happen in cases
         # where we train on a subset of classes and the image doesn't
@@ -245,7 +245,7 @@ class Dataset(torch.utils.data.Dataset):
                                                 gt_class_ids, gt_boxes, self.config)
 
         # If more instances than fits in the array, sub-sample from them.
-        if gt_boxes.shape[0] > self.config.MAX_GT_INSTANCES:
+        if gt_boxes.shape[0] > self.config.TRAIN.MAX_GT_INSTANCES:
             ids = np.random.choice(
                 np.arange(gt_boxes.shape[0]), self.config.MAX_GT_INSTANCES, replace=False)
             gt_class_ids = gt_class_ids[ids]

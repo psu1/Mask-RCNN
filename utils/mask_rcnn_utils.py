@@ -31,14 +31,14 @@ def mold_inputs(config, images):
         # TODO: move resizing to mold_image()
         molded_image, window, scale, padding = utils.resize_image(
             image,
-            min_dim=config.IMAGE_MIN_DIM,
-            max_dim=config.IMAGE_MAX_DIM,
-            padding=config.IMAGE_PADDING)
+            min_dim=config.TRAIN.IMAGE_MIN_DIM,
+            max_dim=config.TRAIN.IMAGE_MAX_DIM,
+            padding=config.TRAIN.IMAGE_PADDING)
         molded_image = mold_image(molded_image, config)
         # Build image_meta
         image_meta = compose_image_meta(
             0, image.shape, window,
-            np.zeros([config.NUM_CLASSES], dtype=np.int32))
+            np.zeros([config.MODEL.NUM_CLASSES], dtype=np.int32))
         # Append
         molded_images.append(molded_image)
         windows.append(window)

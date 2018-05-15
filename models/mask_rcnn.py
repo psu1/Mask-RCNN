@@ -27,14 +27,14 @@ class MaskRCNN(nn.Module):
     """Encapsulates the Mask RCNN model functionality.
     """
 
-    def __init__(self, config, model_dir):
+    def __init__(self, config):
         """
         config: A Sub-class of the Config class
         model_dir: Directory to save training logs and trained weights
         """
         super(MaskRCNN, self).__init__()
         self.config = config
-        self.model_dir = model_dir
+        self.model_dir = config.TRAIN.LOG_DIR
         self.set_log_dir()
         self.build(config=config)
         self.initialize_weights()
@@ -46,7 +46,7 @@ class MaskRCNN(nn.Module):
         """
 
         # Image size must be dividable by 2 multiple times
-        h, w = config.IMAGE_SHAPE[:2]
+        h, w = config.TRAIN.IMAGE_SHAPE[:2]
         if h / 2**6 != int(h / 2**6) or w / 2**6 != int(w / 2**6):
             raise Exception("Image size must be dividable by 2 at least 6 times "
                             "to avoid fractions when downscaling and upscaling."
@@ -64,26 +64,26 @@ class MaskRCNN(nn.Module):
         self.fpn = FPN(C1, C2, C3, C4, C5, out_channels=256)
 
         # Generate Anchors
-        self.anchors = Variable(torch.from_numpy(utils.generate_pyramid_anchors(config.RPN_ANCHOR_SCALES,
-                                                                                config.RPN_ANCHOR_RATIOS,
-                                                                                config.BACKBONE_SHAPES,
-                                                                                config.BACKBONE_STRIDES,
-                                                                                config.RPN_ANCHOR_STRIDE)).float(), requires_grad=False)
+        self.anchors = Variable(torch.from_numpy(utils.generate_pyramid_anchors(config.RPN.ANCHOR_SCALES,
+                                                                                config.RPN.ANCHOR_RATIOS,
+                                                                                config.FPN.BACKBONE_SHAPES,
+                                                                                config.FPN.BACKBONE_STRIDES,
+                                                                                config.RPN.ANCHOR_STRIDE)).float(), requires_grad=False)
         if self.config.GPU_COUNT:
             self.anchors = self.anchors.cuda()
 
         # RPN
-        self.rpn = RPN(len(config.RPN_ANCHOR_RATIOS), config.RPN_ANCHOR_STRIDE, 256)
+        self.rpn = RPN(len(config.RPN.ANCHOR_RATIOS), config.RPN.ANCHOR_STRIDE, 256)
 
         # FPN Classifier
-        self.classifier = Classifier(256, config.POOL_SIZE, config.IMAGE_SHAPE, config.NUM_CLASSES)
+        self.classifier = Classifier(256, config.ROIS.POOL_SIZE, config.TRAIN.IMAGE_SHAPE, config.MODEL.NUM_CLASSES)
 
         # FPN Mask
-        self.mask = Mask(256, config.MASK_POOL_SIZE, config.IMAGE_SHAPE, config.NUM_CLASSES)
+        self.mask = Mask(256, config.MRCNN.POOL_SIZE, config.TRAIN.IMAGE_SHAPE, config.MODEL.NUM_CLASSES)
 
         # Fix batch norm layers
         def set_bn_fix(m):
-            classname = m.__class__.__name__
+            classname= m.__class__.__name__
             if classname.find('BatchNorm') != -1:
                 for p in m.parameters(): p.requires_grad = False
 
@@ -111,7 +111,7 @@ class MaskRCNN(nn.Module):
         model_path: If None, or a format different from what this code uses
             then set a new log directory and start epochs from 0. Otherwise,
             extract the log directory and the epoch counter from the file
-            name.
+            MODEL.NAME.
         """
 
         # Set date and epoch counter as if starting a new model
@@ -120,7 +120,7 @@ class MaskRCNN(nn.Module):
 
         # If we have a model path with date and epochs use them
         if model_path:
-            # Continue from we left of. Get epoch and date from the file name
+            # Continue from we left of. Get epoch and date from the file MODEL.NAME
             # A sample model path might look like:
             # /path/to/logs/coco20171029T2315/mask_rcnn_coco_0001.h5
             regex = r".*/\w+(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})/mask\_rcnn\_\w+(\d{4})\.pth"
@@ -132,11 +132,11 @@ class MaskRCNN(nn.Module):
 
         # Directory for training logs
         self.log_dir = os.path.join(self.model_dir, "{}{:%Y%m%dT%H%M}".format(
-            self.config.NAME.lower(), now))
+            self.config.MODEL.NAME.lower(), now))
 
         # Path to save after each epoch. Include placeholders that get filled by Keras.
         self.checkpoint_path = os.path.join(self.log_dir, "mask_rcnn_{}_*epoch*.pth".format(
-            self.config.NAME.lower()))
+            self.config.MODEL.NAME.lower()))
         self.checkpoint_path = self.checkpoint_path.replace(
             "*epoch*", "{:04d}")
 
@@ -145,7 +145,7 @@ class MaskRCNN(nn.Module):
         """Modified version of the correspoding Keras function with
         the addition of multi-GPU support and the ability to exclude
         some layers from loading.
-        exlude: list of layer names to excluce
+        exlude: list of layer MODEL.NAMEs to excluce
         """
         if os.path.exists(filepath):
             state_dict = torch.load(filepath)
@@ -199,11 +199,11 @@ class MaskRCNN(nn.Module):
         # Generate proposals
         # Proposals are [batch, N, (y1, x1, y2, x2)] in normalized coordinates
         # and zero padded.
-        proposal_count = self.config.POST_NMS_ROIS_TRAINING if mode == "training" \
-            else self.config.POST_NMS_ROIS_INFERENCE
+        proposal_count = self.config.ROIS.POST_NMS_ROIS if mode == "training" \
+            else self.config.TEST.POST_NMS_ROIS
         rpn_rois = proposal_layer([rpn_class, rpn_bbox],
                                  proposal_count=proposal_count,
-                                 nms_threshold=self.config.RPN_NMS_THRESHOLD,
+                                 nms_threshold=self.config.RPN.NMS_THRESHOLD,
                                  anchors=self.anchors,
                                  config=self.config)
 
@@ -219,7 +219,7 @@ class MaskRCNN(nn.Module):
             # Convert boxes to normalized coordinates
             # TODO: let DetectionLayer return normalized coordinates to avoid
             #       unnecessary conversions
-            h, w = self.config.IMAGE_SHAPE[:2]
+            h, w = self.config.TRAIN.IMAGE_SHAPE[:2]
             scale = Variable(torch.from_numpy(np.array([h, w, h, w])).float(), requires_grad=False)
             if self.config.GPU_COUNT:
                 scale = scale.cuda()
@@ -244,7 +244,7 @@ class MaskRCNN(nn.Module):
             gt_masks = input[4]
 
             # Normalize coordinates
-            h, w = self.config.IMAGE_SHAPE[:2]
+            h, w = self.config.TRAIN.IMAGE_SHAPE[:2]
             scale = Variable(torch.from_numpy(np.array([h, w, h, w])).float(), requires_grad=False)
             if self.config.GPU_COUNT:
                 scale = scale.cuda()

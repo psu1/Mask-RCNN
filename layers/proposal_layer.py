@@ -68,7 +68,7 @@ def proposal_layer(inputs, proposal_count, nms_threshold, anchors, config=None):
 
     # Box deltas [batch, num_rois, 4]
     deltas = inputs[1]
-    std_dev = Variable(torch.from_numpy(np.reshape(config.RPN_BBOX_STD_DEV, [1, 4])).float(), requires_grad=False)
+    std_dev = Variable(torch.from_numpy(np.reshape(config.RPN.BBOX_STD_DEV, [1, 4])).float(), requires_grad=False)
     if config.GPU_COUNT:
         std_dev = std_dev.cuda()
     deltas = deltas * std_dev
@@ -87,7 +87,7 @@ def proposal_layer(inputs, proposal_count, nms_threshold, anchors, config=None):
     boxes = apply_box_deltas(anchors, deltas)
 
     # Clip to image boundaries. [batch, N, (y1, x1, y2, x2)]
-    height, width = config.IMAGE_SHAPE[:2]
+    height, width = config.TRAIN.IMAGE_SHAPE[:2]
     window = np.array([0, 0, height, width]).astype(np.float32)
     boxes = clip_boxes(boxes, window)
 

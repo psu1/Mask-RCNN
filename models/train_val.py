@@ -9,54 +9,12 @@ import torch.optim as optim
 import torch.utils.data
 from torch.autograd import Variable
 
-from cfgs.config import Config
 from models.lossFunction import compute_losses
 
 from tools.log import log, printProgressBar
 import tools.visualize as visualize
 from utils.dataLoader import Dataset
 from utils.mask_rcnn_utils import mold_inputs, unmold_detections
-
-
-# Root directory of the project
-ROOT_DIR = os.getcwd()
-
-# Path to trained weights file
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "pre_train_models/mask_rcnn_coco.pth")
-
-# Directory to save logs and model checkpoints, if not provided
-# through the command line argument --logs
-DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
-
-# Path to save printing logs: DEFAULT_LOGS_DIR
-# DEFAULT_LOGS_DIR --> args.logs --> MaskRCNN (..)
-
-# also modify DEFAULT_DATASET_YEAR in utils.coco.py, if you change it
-DEFAULT_DATASET_YEAR = "2014"
-
-
-
-#  Configurations
-class CocoConfig(Config):
-    """Configuration for training on MS COCO.
-    Derives from the base Config class and overrides values specific
-    to the COCO dataset.
-    """
-    # Give the configuration a recognizable name
-    NAME = "coco"
-
-    # We use one GPU with 8GB memory, which can fit one image.
-    # Adjust down if you use a smaller GPU.
-    IMAGES_PER_GPU = 1
-
-    # Uncomment to train on 8 GPUs (default is 1)
-    GPU_COUNT = 1
-
-    # Number of classes (including background)
-    NUM_CLASSES = 1 + 80  # COCO has 80 classes
-
-    #TRAIN_SCHEDULE for test
-    TRAIN_SCHEDULE = [1, 1, 1]
 
 
 def find_last(model):
@@ -138,26 +96,27 @@ def train_model(model, train_dataset, val_dataset, learning_rate, epochs, layers
     log("Checkpoint Path: {}".format(model.checkpoint_path))
     set_trainable(model, layers)
 
+
     # Optimizer object
     # Add L2 Regularization
     # Skip gamma and beta weights of batch normalization layers.
     trainables_wo_bn = [param for name, param in model.named_parameters() if param.requires_grad and not 'bn' in name]
     trainables_only_bn = [param for name, param in model.named_parameters() if param.requires_grad and 'bn' in name]
     optimizer = optim.SGD([
-        {'params': trainables_wo_bn, 'weight_decay': model.config.WEIGHT_DECAY},
+        {'params': trainables_wo_bn, 'weight_decay': model.config.SOLVER.WEIGHT_DECAY},
         {'params': trainables_only_bn}
-    ], lr=learning_rate, momentum=model.config.LEARNING_MOMENTUM)
+    ], lr=learning_rate, momentum=model.config.SOLVER.MOMENTUM)
 
     for epoch in range(model.epoch + 1, epochs + 1):
         log("Epoch {}/{}.".format(epoch, epochs))
 
         # Training
         loss, loss_rpn_class, loss_rpn_bbox, loss_mrcnn_class, loss_mrcnn_bbox, loss_mrcnn_mask = train_epoch(
-            model, train_generator, optimizer, model.config.STEPS_PER_EPOCH)
+            model, train_generator, optimizer, model.config.TRAIN.STEPS_PER_EPOCH)
 
         # Validation
         val_loss, val_loss_rpn_class, val_loss_rpn_bbox, val_loss_mrcnn_class, val_loss_mrcnn_bbox, val_loss_mrcnn_mask = valid_epoch(
-            model, val_generator, model.config.VALIDATION_STEPS)
+            model, val_generator, model.config.TRAIN.VALIDATION_STEPS)
 
         # Statistics
         model.loss_history.append(
@@ -235,7 +194,7 @@ def train_epoch(model, datagenerator, optimizer, steps):
         # Backpropagation
         loss.backward()
         torch.nn.utils.clip_grad_norm(model.parameters(), 5.0)
-        if (batch_count % model.config.BATCH_SIZE) == 0:
+        if (batch_count % model.config.TRAIN.BATCH_SIZE) == 0:
             optimizer.step()
             optimizer.zero_grad()
             batch_count = 0
