@@ -80,13 +80,6 @@ For example, training on COCO dataset:
     # Train a new model starting from pre-trained COCO weights
     python main.py train --cfg cfgs/coco_train.yaml
 
-
-If you have not yet downloaded the COCO dataset you should run the command
-with the download option set, e.g.:
-
-    # Train a new model starting from pre-trained COCO weights
-    python main.py train --dataset=/path/to/coco/ --model=coco --download=true
-
 You can also run the COCO evaluation code with:
 
     # Run COCO evaluation on the last trained model
