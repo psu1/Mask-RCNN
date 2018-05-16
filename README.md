@@ -55,9 +55,9 @@ and [RoiAlign](https://github.com/longcw/RoIAlign.pytorch) modules with the corr
         make
         cd ../../..
 
-    Create a symlink in `/lib/pycocotools`.
+    Create a symlink in `lib/pycocotools`.
 
-        ln -s /path/to/coco/cocoapi/PythonAPI/pycocotools/  /lib/pycocotools
+        ln -s /path/to/coco/cocoapi/PythonAPI/pycocotools/  lib/pycocotools
     
 4. Download the pretrained models on COCO and ImageNet from [Google Drive](https://drive.google.com/open?id=1LXUgC2IZUYNEoXr05tdqyKFZY0pZyPDc).
 
@@ -73,7 +73,7 @@ To test your installation simply run the demo with
 
 ## Training
 
-The TRAIN_SCHEDULE, LEARNING_RATE and other parameters can be set in `CocoConfig` of `/models/train_val.py`.
+The TRAIN_SCHEDULE, LEARNING_RATE and other parameters can be set in `CocoConfig` of `models/train_val.py`.
 
 For example, training on COCO dataset:
 
