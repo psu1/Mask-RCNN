@@ -12,5 +12,5 @@ TRAIN:
   WEIGHTS: "pre_train_models/mask_rcnn_coco.pth"
   TRAIN_SCHEDULE: [1, 1, 1]
 
-
+GPU_COUNT: 1 if >1, start parallel training
 

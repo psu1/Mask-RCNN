@@ -57,7 +57,7 @@ def main():
         model.load_weights(model_path)
 
     # Multi-GPU support
-    if cfg.NUM_GPUS > 1:
+    if cfg.GPU_COUNT > 1:
         model = mynn.DataParallel(model, cpu_keywords=['im_info', 'roidb'],
                                  minibatch=True )
 
