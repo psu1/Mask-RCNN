@@ -6,15 +6,16 @@ from models.config import cfg, set_cfg_value, cfg_from_file
 from models.mask_rcnn import  MaskRCNN
 from models.train_val import *
 
+import  lib.nn as mynn
 from utils.coco import CocoDataset, evaluate_coco
 from tools.fprintfLog import fprintf_log
 import datetime
 
 import pprint
 
-import os
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
-os.environ["CUDA_VISIBLE_DEVICES"]="3"
+# import os
+# os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+# os.environ["CUDA_VISIBLE_DEVICES"]="3"
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -55,6 +56,10 @@ def main():
         print("Loading weights ", model_path)
         model.load_weights(model_path)
 
+    # Multi-GPU support
+    if cfg.NUM_GPUS > 1:
+        model = mynn.DataParallel(model, cpu_keywords=['im_info', 'roidb'],
+                                 minibatch=True )
 
     # save printing logs to file
     now = datetime.datetime.now()
