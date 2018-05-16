@@ -2,6 +2,9 @@
 Logging Utility Functions
 '''
 
+#avoid unicode bug
+# str(a) => a.encode('utf-8')
+
 def log(text, array=None):
     """Prints a text message. And, optionally, if a Numpy array is provided it
     prints it's shape, min, and max values.

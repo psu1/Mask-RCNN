@@ -12,6 +12,10 @@ import datetime
 
 import pprint
 
+import os
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
+os.environ["CUDA_VISIBLE_DEVICES"]="3"
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Train Mask R-CNN on MS COCO.')
@@ -33,6 +37,7 @@ def main():
 
     # Configuration
     cfg_from_file(args.cfg_file)
+    # Adaptively adjust some configs
     set_cfg_value()
     print(pprint.pformat(cfg))
 
